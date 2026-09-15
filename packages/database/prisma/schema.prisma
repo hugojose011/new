@@ -1,0 +1,443 @@
+// ---------------------------------------------------------------------------
+// Plataforma de agendamento — modelo de dados
+//
+// Convenções:
+// * Todos os timestamps são armazenados em UTC (timestamptz).
+// * Timezones são sempre identificadores IANA (ex.: America/Sao_Paulo).
+// * Horários de disponibilidade são minutos desde a meia-noite local do
+//   schedule (09:30 = 570), o que evita ambiguidade em dias de DST.
+// ---------------------------------------------------------------------------
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [btree_gist]
+}
+
+// ---------------------------------------------------------------------------
+// Workspace / usuários
+// ---------------------------------------------------------------------------
+
+model Workspace {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  members    WorkspaceMember[]
+  users      User[]
+  eventTypes EventType[]
+  bookings   Booking[]
+
+  @@map("workspaces")
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model WorkspaceMember {
+  id          String        @id @default(uuid()) @db.Uuid
+  workspaceId String        @db.Uuid
+  userId      String        @db.Uuid
+  role        WorkspaceRole @default(OWNER)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@map("workspace_members")
+}
+
+model User {
+  id                String    @id @default(uuid()) @db.Uuid
+  workspaceId       String    @db.Uuid
+  name              String
+  email             String    @unique
+  passwordHash      String
+  username          String?   @unique
+  timezone          String    @default("America/Sao_Paulo")
+  locale            String    @default("pt-BR")
+  onboardingStep    Int       @default(0)
+  onboardingDone    Boolean   @default(false)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @db.Timestamptz(6)
+
+  workspace           Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  memberships         WorkspaceMember[]
+  calendarConnections CalendarConnection[]
+  schedules           AvailabilitySchedule[]
+  eventTypes          EventType[]
+  bookings            Booking[]
+  auditLogs           AuditLog[]
+
+  @@index([workspaceId])
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// Integração com provedores de calendário
+// ---------------------------------------------------------------------------
+
+enum CalendarProvider {
+  GOOGLE
+}
+
+enum CalendarConnectionStatus {
+  CONNECTED
+  DISCONNECTED
+  REAUTH_REQUIRED
+}
+
+model CalendarConnection {
+  id                    String                   @id @default(uuid()) @db.Uuid
+  userId                String                   @db.Uuid
+  provider              CalendarProvider         @default(GOOGLE)
+  providerAccountId     String
+  accountEmail          String?
+  encryptedAccessToken  String?
+  encryptedRefreshToken String?
+  tokenExpiresAt        DateTime?                @db.Timestamptz(6)
+  scopes                String[]                 @default([])
+  status                CalendarConnectionStatus @default(CONNECTED)
+  lastSyncedAt          DateTime?                @db.Timestamptz(6)
+  // Preparado para sincronização incremental futura (webhooks + sync tokens).
+  syncChannelId         String?
+  syncChannelExpiresAt  DateTime?                @db.Timestamptz(6)
+  createdAt             DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime                 @updatedAt @db.Timestamptz(6)
+
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calendars ConnectedCalendar[]
+
+  @@unique([userId, provider, providerAccountId])
+  @@index([userId])
+  @@map("calendar_connections")
+}
+
+model ConnectedCalendar {
+  id                   String   @id @default(uuid()) @db.Uuid
+  calendarConnectionId String   @db.Uuid
+  providerCalendarId   String
+  name                 String
+  isPrimary            Boolean  @default(false)
+  checkConflicts       Boolean  @default(false)
+  isBookingDestination Boolean  @default(false)
+  accessRole           String?
+  timezone             String?
+  syncToken            String?
+  createdAt            DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(6)
+
+  connection CalendarConnection @relation(fields: [calendarConnectionId], references: [id], onDelete: Cascade)
+
+  @@unique([calendarConnectionId, providerCalendarId])
+  @@index([calendarConnectionId])
+  @@map("connected_calendars")
+}
+
+// ---------------------------------------------------------------------------
+// Disponibilidade
+// ---------------------------------------------------------------------------
+
+model AvailabilitySchedule {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  name      String
+  timezone  String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  user       User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rules      AvailabilityRule[]
+  overrides  AvailabilityOverride[]
+  eventTypes EventType[]
+
+  @@index([userId])
+  @@map("availability_schedules")
+}
+
+model AvailabilityRule {
+  id          String   @id @default(uuid()) @db.Uuid
+  scheduleId  String   @db.Uuid
+  weekday     Int // 0 = domingo ... 6 = sábado
+  startMinute Int
+  endMinute   Int
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  schedule AvailabilitySchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@index([scheduleId])
+  @@index([scheduleId, weekday])
+  @@map("availability_rules")
+}
+
+enum AvailabilityOverrideType {
+  UNAVAILABLE
+  CUSTOM_HOURS
+}
+
+model AvailabilityOverride {
+  id         String                   @id @default(uuid()) @db.Uuid
+  scheduleId String                   @db.Uuid
+  date       DateTime                 @db.Date
+  type       AvailabilityOverrideType
+  note       String?
+  createdAt  DateTime                 @default(now()) @db.Timestamptz(6)
+
+  schedule  AvailabilitySchedule           @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  intervals AvailabilityOverrideInterval[]
+
+  @@unique([scheduleId, date])
+  @@index([scheduleId])
+  @@map("availability_overrides")
+}
+
+model AvailabilityOverrideInterval {
+  id          String @id @default(uuid()) @db.Uuid
+  overrideId  String @db.Uuid
+  startMinute Int
+  endMinute   Int
+
+  override AvailabilityOverride @relation(fields: [overrideId], references: [id], onDelete: Cascade)
+
+  @@index([overrideId])
+  @@map("availability_override_intervals")
+}
+
+// ---------------------------------------------------------------------------
+// Tipos de evento
+// ---------------------------------------------------------------------------
+
+enum LocationType {
+  GOOGLE_MEET
+  PHYSICAL
+  CUSTOM_LINK
+  PHONE
+  NONE
+}
+
+enum EventKind {
+  ONE_TO_ONE
+  GROUP
+  COLLECTIVE
+  ROUND_ROBIN
+}
+
+model EventType {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  hostUserId  String @db.Uuid
+  scheduleId  String @db.Uuid
+
+  name        String
+  slug        String
+  description String?
+
+  kind                EventKind    @default(ONE_TO_ONE)
+  durationMinutes     Int          @default(30)
+  slotIntervalMinutes Int          @default(30)
+  locationType        LocationType @default(GOOGLE_MEET)
+  locationValue       String?
+
+  bufferBeforeMinutes Int  @default(0)
+  bufferAfterMinutes  Int  @default(0)
+  minimumNoticeMinutes Int @default(120)
+  bookingWindowDays   Int  @default(30)
+  maxBookingsPerDay   Int?
+
+  // Preparado para regras futuras de cancelamento/reagendamento (§38).
+  minimumCancellationNoticeMinutes Int @default(0)
+  minimumRescheduleNoticeMinutes   Int @default(0)
+
+  timezone  String
+  isActive  Boolean   @default(true)
+  deletedAt DateTime? @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  host      User                 @relation(fields: [hostUserId], references: [id], onDelete: Cascade)
+  schedule  AvailabilitySchedule @relation(fields: [scheduleId], references: [id])
+  questions EventQuestion[]
+  bookings  Booking[]
+
+  @@unique([hostUserId, slug])
+  @@index([hostUserId])
+  @@index([workspaceId])
+  @@index([slug])
+  @@map("event_types")
+}
+
+enum QuestionType {
+  TEXT
+  TEXTAREA
+  SELECT
+  RADIO
+  CHECKBOX
+}
+
+model EventQuestion {
+  id          String       @id @default(uuid()) @db.Uuid
+  eventTypeId String       @db.Uuid
+  label       String
+  type        QuestionType @default(TEXT)
+  required    Boolean      @default(false)
+  options     String[]     @default([])
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
+
+  eventType EventType       @relation(fields: [eventTypeId], references: [id], onDelete: Cascade)
+  answers   BookingAnswer[]
+
+  @@index([eventTypeId])
+  @@map("event_questions")
+}
+
+// ---------------------------------------------------------------------------
+// Reservas
+// ---------------------------------------------------------------------------
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  RESCHEDULED
+  FAILED
+}
+
+model Booking {
+  id          String @id @default(uuid()) @db.Uuid
+  workspaceId String @db.Uuid
+  eventTypeId String @db.Uuid
+  hostUserId  String @db.Uuid
+
+  inviteeName     String
+  inviteeEmail    String
+  inviteePhone    String?
+  inviteeTimezone String
+
+  // Snapshots para preservar histórico mesmo se o EventType mudar (§77).
+  eventNameSnapshot     String
+  eventDurationSnapshot Int
+  locationTypeSnapshot  LocationType
+  locationValueSnapshot String?
+
+  startAt DateTime @db.Timestamptz(6)
+  endAt   DateTime @db.Timestamptz(6)
+
+  // Intervalo efetivamente bloqueado (inclui buffers). Base da constraint
+  // de exclusão que impede double booking.
+  blockedStartAt DateTime @db.Timestamptz(6)
+  blockedEndAt   DateTime @db.Timestamptz(6)
+
+  status BookingStatus @default(PENDING)
+
+  googleCalendarId String?
+  googleEventId    String?
+  googleMeetUrl    String?
+  syncError        String?
+
+  idempotencyKey String?
+
+  cancelTokenHash     String  @unique
+  rescheduleTokenHash String  @unique
+  cancellationReason  String?
+
+  // Analytics/atribuição opcional (§87).
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmContent  String?
+  utmTerm     String?
+
+  cancelledAt   DateTime? @db.Timestamptz(6)
+  rescheduledAt DateTime? @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  eventType EventType        @relation(fields: [eventTypeId], references: [id])
+  host      User             @relation(fields: [hostUserId], references: [id], onDelete: Cascade)
+  answers   BookingAnswer[]
+  history   BookingHistory[]
+
+  @@unique([eventTypeId, idempotencyKey])
+  @@index([hostUserId])
+  @@index([startAt])
+  @@index([status])
+  @@index([eventTypeId])
+  @@index([hostUserId, status, startAt])
+  @@map("bookings")
+}
+
+model BookingAnswer {
+  id                    String  @id @default(uuid()) @db.Uuid
+  bookingId             String  @db.Uuid
+  questionId            String? @db.Uuid
+  questionLabelSnapshot String
+  answer                String
+
+  booking  Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  question EventQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId])
+  @@map("booking_answers")
+}
+
+enum BookingHistoryAction {
+  CREATED
+  CONFIRMED
+  RESCHEDULED
+  CANCELLED
+  FAILED
+}
+
+model BookingHistory {
+  id         String               @id @default(uuid()) @db.Uuid
+  bookingId  String               @db.Uuid
+  action     BookingHistoryAction
+  oldStartAt DateTime?            @db.Timestamptz(6)
+  oldEndAt   DateTime?            @db.Timestamptz(6)
+  newStartAt DateTime?            @db.Timestamptz(6)
+  newEndAt   DateTime?            @db.Timestamptz(6)
+  metadata   Json?
+  createdAt  DateTime             @default(now()) @db.Timestamptz(6)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@map("booking_history")
+}
+
+// ---------------------------------------------------------------------------
+// Auditoria
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String?  @db.Uuid
+  workspaceId String?  @db.Uuid
+  action      String
+  entityType  String?
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

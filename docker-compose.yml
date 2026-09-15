@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: agenda-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: agenda
+    ports:
+      - '5432:5432'
+    volumes:
+      - agenda-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d agenda']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: agenda-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    profiles: ['optional']
+
+volumes:
+  agenda-db-data:
