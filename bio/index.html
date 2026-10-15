@@ -1,272 +1,269 @@
 <title>Link na Bio da Clínica</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Layout: uma coluna estreita como um cartão de prontuário — cabeçalho, números, destaque, links, conteúdo, endereço */
+/* Layout: um cartão central de 480px sobre fundo neutro; perfil, redes, links em lista, conteúdo e endereço */
 :root {
-  --bg: #f6fbff;
-  --surface: #ffffff;
-  --ink: #1d3a52;
-  --muted: #6b7f90;
-  --line: #d1dbe3;
-  --accent: #2b6a9b;
-  --accent-ink: #ffffff;
-  --accent-soft: #d5e7f5;
-  --pulse: #e15771;
-  --font-display: "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-body: "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
+  --bg: #fafafa;
+  --card: #fcfcfc;
+  --card-line: #e8e8e8;
+  --row: #fcfcfc;
+  --row-line: #f2f2f2;
+  --icon-bg: #f0f0f0;
+  --icon-line: #ededed;
+  --ink: #1d1d1d;
+  --muted: #a0a2a7;
+  --soft: #787878;
+  --hot: #ff5588;
+  --go: #23db60;
+  --font: "Inter", "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0d1822; --surface: #14222f; --ink: #e4eef6; --muted: #93a7b8;
-    --line: #26394a; --accent: #6ea9d7; --accent-ink: #0b1a26; --accent-soft: #1b3346;
-    --pulse: #f07a90; color-scheme: dark;
+    --bg: #111112; --card: #18181a; --card-line: #2a2a2d; --row: #1d1d20; --row-line: #29292c;
+    --icon-bg: #262629; --icon-line: #313134; --ink: #f1f1f2; --muted: #8b8d93; --soft: #9a9a9e;
+    --hot: #ff6b98; --go: #3ee577; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0d1822; --surface: #14222f; --ink: #e4eef6; --muted: #93a7b8;
-  --line: #26394a; --accent: #6ea9d7; --accent-ink: #0b1a26; --accent-soft: #1b3346;
-  --pulse: #f07a90; color-scheme: dark;
+  --bg: #111112; --card: #18181a; --card-line: #2a2a2d; --row: #1d1d20; --row-line: #29292c;
+  --icon-bg: #262629; --icon-line: #313134; --ink: #f1f1f2; --muted: #8b8d93; --soft: #9a9a9e;
+  --hot: #ff6b98; --go: #3ee577; color-scheme: dark;
 }
 
 body {
   background: var(--bg);
   color: var(--ink);
-  font: 400 1rem/1.5 var(--font-body);
+  font: 400 1rem/1.35 var(--font);
+  letter-spacing: -.02em;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.page {
-  max-width: 30rem;
-  margin: 0 auto;
-  padding-block: 2.5rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
+main { padding-block: 80px; display: flex; justify-content: center; }
+.card {
+  width: 100%; max-width: 480px;
+  background: var(--card); border: 1px solid var(--card-line); border-radius: 16px;
+  padding: 40px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 40px;
 }
-a { color: inherit; }
-a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 809px) {
+  main { padding-block: 0; }
+  .card { background: none; border: 0; border-radius: 0; padding: 40px 0 48px; gap: 32px; }
+}
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
-/* Cabeçalho */
-.head { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .75rem; }
-.logo {
-  width: 5.5rem; height: 5.5rem; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--accent); color: var(--accent-ink);
-  font: 700 2rem/1 var(--font-display); letter-spacing: -.02em;
+/* Perfil */
+.profile { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+.avatar {
+  width: 96px; height: 96px; border-radius: 60px; border: 1px solid #e6e6e6; overflow: hidden;
+  display: grid; place-items: center; background: var(--icon-bg);
+  font-weight: 600; font-size: 1.75rem; color: var(--soft);
 }
-.head h1 { margin: 0; font: 700 1.75rem/1.1 var(--font-display); letter-spacing: -.02em; text-wrap: balance; }
-.head p { margin: 0; color: var(--muted); max-width: 22rem; text-wrap: balance; }
-.handle { font-size: .8125rem; color: var(--accent); font-weight: 600; text-decoration: none; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.profile h1 { margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.1; }
+.profile p { margin: 4px 0 0; font-size: .8rem; color: var(--muted); max-width: 18rem; }
 
-/* Números */
-.stats {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-block: 1px solid var(--line);
-  padding-block: 1rem;
+/* Redes com número de seguidores */
+.socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
+.social {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 12px; border-radius: 16px;
+  background: var(--row); border: 1px solid var(--row-line);
+  opacity: .7; font-size: .88rem; font-weight: 500;
+  transition: opacity .15s ease;
 }
-.stat { text-align: center; display: flex; flex-direction: column; gap: .125rem; min-width: 0; }
-.stat + .stat { border-left: 1px solid var(--line); }
-.stat b { font: 700 1.25rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
-.stat span { font-size: .6875rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-@media (max-width: 380px) {
-  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1rem; }
-  .stat:nth-child(3) { border-left: 0; }
-}
-
-/* Destaque */
-.feature {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  display: flex; flex-direction: column; gap: 1rem;
-}
-.feature .tag {
-  align-self: flex-start;
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--pulse);
-}
-.feature .tag::before {
-  content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--pulse);
-  animation: beat 1.6s ease-in-out infinite;
-}
-@keyframes beat { 0%,100% { transform: scale(1); } 15% { transform: scale(1.5); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } }
-.feature h2 { margin: 0; font: 700 1.375rem/1.15 var(--font-display); text-wrap: balance; }
-.feature p { margin: 0; color: var(--muted); }
-
-.btn {
-  display: flex; align-items: center; justify-content: center; gap: .5rem;
-  min-height: 3.25rem; padding-inline: 1.25rem;
-  border-radius: 999px; border: 0;
-  background: var(--accent); color: var(--accent-ink);
-  font: 600 1rem/1 var(--font-body); text-decoration: none; cursor: pointer;
-  transition: transform .15s ease, filter .15s ease;
-}
-.btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
-.btn small { font-weight: 500; opacity: .8; }
-.note { text-align: center; font-size: .8125rem; color: var(--muted); margin: -.25rem 0 0; }
+.social:hover { opacity: 1; }
+.social svg { width: 18px; height: 18px; }
 
 /* Links */
-.links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .625rem; }
-.links a {
-  display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; align-items: center; gap: .875rem;
-  padding: .75rem 1rem .75rem .75rem;
-  background: var(--surface); border: 1px solid var(--line); border-radius: 1rem;
-  text-decoration: none;
-  transition: border-color .15s ease, transform .15s ease;
+.links { width: 100%; display: flex; flex-direction: column; gap: 16px; }
+@media (max-width: 809px) { .links { gap: 12px; } }
+.row {
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) 16px; align-items: center; gap: 12px;
+  padding: 10px 14px 10px 10px;
+  background: var(--row); border: 1px solid var(--row-line); border-radius: 12px;
+  transition: transform .15s ease, border-color .15s ease;
 }
-.links a:hover { border-color: var(--accent); transform: translateX(2px); }
-.ico {
-  width: 2.5rem; height: 2.5rem; border-radius: .75rem;
-  display: grid; place-items: center;
-  background: var(--accent-soft); color: var(--accent);
+.row:hover { transform: translateY(-1px); border-color: var(--card-line); }
+.icon {
+  width: 40px; height: 40px; border-radius: 20px;
+  display: grid; place-items: center; overflow: hidden;
+  background: var(--icon-bg); border: 1px solid var(--icon-line); color: var(--ink);
 }
-.ico svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.links strong { display: block; font-weight: 600; }
-.links span { display: block; font-size: .875rem; color: var(--muted); }
-.arrow { color: var(--muted); font-size: 1.25rem; }
+.icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .75; }
+.icon img { width: 100%; height: 100%; object-fit: cover; }
+.icon.thumb { border-radius: 20px; }
+.row b { display: block; font-size: .9rem; font-weight: 600; }
+.row small { display: block; font-size: .8rem; color: var(--muted); margin-top: 2px; }
+.row .chev { width: 16px; height: 16px; fill: none; stroke: var(--muted); stroke-width: 2; }
+.badge {
+  display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 99px;
+  background: var(--hot); color: #fff; font-size: .68rem; font-weight: 600; vertical-align: 1px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--go); display: inline-block; margin-right: 6px; vertical-align: 1px; }
 
-/* Seção com título */
-.section { display: flex; flex-direction: column; gap: .75rem; }
-.section h3 {
-  margin: 0; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
-}
+.divider { width: 100%; height: 1px; background: var(--row-line); }
+.label { font-size: .8rem; font-weight: 500; color: var(--muted); align-self: flex-start; margin-bottom: -4px; }
+
+/* Episódio */
 .episode {
-  display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; align-items: center;
-  padding: .875rem; background: var(--surface); border: 1px solid var(--line); border-radius: 1rem;
-  text-decoration: none;
+  display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: center;
+  padding: 10px; border-radius: 12px; background: var(--row); border: 1px solid var(--row-line);
 }
-.cover {
-  aspect-ratio: 1; max-width: 100%; border-radius: .75rem;
-  background: var(--accent); color: var(--accent-ink);
-  display: grid; place-items: center; font: 700 1.25rem/1 var(--font-display);
+.episode .cover {
+  aspect-ratio: 1; max-width: 100%; border-radius: 8px; background: var(--ink); color: var(--card);
+  display: grid; place-items: center; font-weight: 600;
 }
-.episode strong { display: block; font-weight: 600; line-height: 1.3; }
-.episode span { display: block; font-size: .8125rem; color: var(--muted); margin-top: .25rem; }
+.episode b { display: block; font-size: .88rem; font-weight: 600; }
+.episode small { display: block; font-size: .78rem; color: var(--muted); margin-top: 4px; }
+.episode .play { color: var(--go); font-weight: 600; }
 
-.address {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem;
-  padding: 1rem; border: 1px dashed var(--line); border-radius: 1rem;
-}
-.address address { font-style: normal; min-width: 0; }
-.address-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-.chip {
-  font: 600 .8125rem/1 var(--font-body); padding: .625rem .875rem; border-radius: 999px;
-  background: var(--accent-soft); color: var(--accent); border: 0; cursor: pointer; text-decoration: none;
+.addr-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.mini {
+  font: 500 .78rem/1 var(--font); letter-spacing: -.01em; padding: 7px 10px; border-radius: 99px; cursor: pointer;
+  background: var(--icon-bg); border: 1px solid var(--icon-line); color: var(--ink);
 }
 
-footer { text-align: center; font-size: .8125rem; color: var(--muted); display: flex; flex-direction: column; gap: .375rem; }
-footer nav { display: flex; justify-content: center; gap: .75rem; flex-wrap: wrap; }
+footer { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: .78rem; color: var(--soft); text-align: center; }
+footer nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before { animation: none !important; transition: none !important; }
-}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
 <!--
   COMO EDITAR
-  Troque os textos e os links (href) abaixo pelos da sua clínica.
-  Todos os números, nomes e endereços desta página são exemplos.
+  Troque os textos, os números e os links (href) pelos da sua marca.
+  Para usar fotos: troque o conteúdo de .avatar ou de um .icon por <img src="sua-imagem.jpg" alt="">.
+  Todos os dados desta página são exemplos.
 -->
-<main class="page">
+<main>
+  <div class="card">
 
-  <header class="head">
-    <div class="logo" aria-hidden="true">SC</div>
-    <h1>Sua Clínica</h1>
-    <p>Odontologia e harmonização facial com atendimento humanizado</p>
-    <a class="handle" href="https://instagram.com/" target="_blank" rel="noopener">@suaclinica</a>
-  </header>
-
-  <section class="stats" aria-label="Números da clínica (exemplo)">
-    <div class="stat"><b>12K+</b><span>Pacientes</span></div>
-    <div class="stat"><b>15</b><span>Anos</span></div>
-    <div class="stat"><b>8</b><span>Especialistas</span></div>
-    <div class="stat"><b>4,9★</b><span>Google</span></div>
-  </section>
-
-  <section class="feature">
-    <span class="tag">Novidade</span>
-    <h2>Avaliação odontológica gratuita em outubro</h2>
-    <p>Check-up completo com radiografia panorâmica e plano de tratamento personalizado.</p>
-    <a class="btn" href="https://wa.me/5500000000000" target="_blank" rel="noopener">Agendar pelo WhatsApp</a>
-    <p class="note">Vagas limitadas · Sem compromisso</p>
-  </section>
-
-  <ul class="links">
-    <li>
-      <a href="https://example.com/" target="_blank" rel="noopener">
-        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
-        <span><strong>Site</strong><span>Conheça a clínica e a equipe</span></span>
-        <span class="arrow" aria-hidden="true">›</span>
-      </a>
-    </li>
-    <li>
-      <a href="https://example.com/tratamentos" target="_blank" rel="noopener">
-        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z"/></svg></span>
-        <span><strong>Tratamentos</strong><span>Valores, formas de pagamento e convênios</span></span>
-        <span class="arrow" aria-hidden="true">›</span>
-      </a>
-    </li>
-    <li>
-      <a href="https://example.com/blog" target="_blank" rel="noopener">
-        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h5"/></svg></span>
-        <span><strong>Blog</strong><span>Dicas de saúde e cuidados pós-tratamento</span></span>
-        <span class="arrow" aria-hidden="true">›</span>
-      </a>
-    </li>
-    <li>
-      <a href="https://example.com/trabalhe-conosco" target="_blank" rel="noopener">
-        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg></span>
-        <span><strong>Trabalhe conosco</strong><span>Envie seu currículo</span></span>
-        <span class="arrow" aria-hidden="true">›</span>
-      </a>
-    </li>
-  </ul>
-
-  <section class="section">
-    <h3>Último episódio do podcast</h3>
-    <a class="episode" href="https://open.spotify.com/" target="_blank" rel="noopener">
-      <span class="cover" aria-hidden="true">#12</span>
-      <span>
-        <strong>Clareamento dental: mitos, verdades e quanto tempo dura</strong>
-        <span>Ouvir no Spotify · 38 min</span>
-      </span>
-    </a>
-  </section>
-
-  <section class="section">
-    <h3>Onde estamos</h3>
-    <div class="address">
-      <address id="endereco">Rua Exemplo, 123 – Sala 4<br>Centro, Sua Cidade/UF</address>
-      <div class="address-actions">
-        <button class="chip" type="button" id="copiar">Copiar endereço</button>
-        <a class="chip" href="https://maps.google.com/" target="_blank" rel="noopener">Abrir no mapa</a>
+    <header class="profile">
+      <div class="avatar" aria-hidden="true">SM</div>
+      <div>
+        <h1>Sua Marca</h1>
+        <p>Sua frase de apresentação em uma linha</p>
       </div>
-    </div>
-  </section>
+      <nav class="socials" aria-label="Redes sociais">
+        <a class="social" href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg>
+          25K+
+        </a>
+        <a class="social" href="https://linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg>
+          4K+
+        </a>
+        <a class="social" href="https://youtube.com/" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg>
+          2K+
+        </a>
+        <a class="social" href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5M14 3c.5 2.5 2.5 4.5 5 4.5"/></svg>
+          800
+        </a>
+      </nav>
+    </header>
 
-  <footer>
-    <nav>
-      <a href="https://example.com/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>
-      <a href="https://example.com/termos" target="_blank" rel="noopener">Termos de Uso</a>
-    </nav>
-    <span>Responsável técnico: Dr(a). Nome Sobrenome · CRO-UF 00000</span>
-  </footer>
+    <section class="links" aria-label="Links">
+      <a class="row" href="https://example.com/novidade" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></span>
+        <span><b>Nome do lançamento<span class="badge">Novo</span></b><small>Uma linha explicando a oferta</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
 
+      <div class="divider"></div>
+
+      <a class="row" href="https://wa.me/5500000000000" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg></span>
+        <span><b>Título do seu serviço</b><small>Fale com o nosso time</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="row" href="https://example.com/teste" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span>
+        <span><b><span class="dot"></span>Chamada principal</b><small>Sem cartão, sem compromisso</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="row" href="https://example.com/" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
+        <span><b>Site</b><small>Conheça a sua marca</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="row" href="https://example.com/blog" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h3"/></svg></span>
+        <span><b>Blog</b><small>Conteúdos para o seu público</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="row" href="https://example.com/newsletter" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+        <span><b>Newsletter</b><small>Inscreva-se na nossa newsletter</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="row" href="https://example.com/vagas" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg></span>
+        <span><b>Trabalhe conosco</b><small>Envie seu currículo</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+
+      <div class="divider"></div>
+
+      <span class="label">Último episódio</span>
+      <a class="episode" href="https://open.spotify.com/" target="_blank" rel="noopener">
+        <span class="cover" aria-hidden="true">#01</span>
+        <span>
+          <b>Título do episódio mais recente do seu podcast</b>
+          <small>Nome do podcast · <span class="play">Ouvir no Spotify</span></small>
+        </span>
+      </a>
+      <a class="row" href="https://open.spotify.com/" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.5 9.5c3-1 6.5-.7 9 .8M8 12.5c2.5-.7 5.3-.4 7.4.8M8.7 15.3c2-.5 4-.3 5.6.6"/></svg></span>
+        <span><b>Podcast no Spotify</b><small>Todos os episódios</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <a class="row" href="https://instagram.com/" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></span>
+        <span><b>Nosso Instagram</b><small>@suamarca</small></span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+
+      <div class="row" style="grid-template-columns: 40px minmax(0,1fr);">
+        <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+        <span>
+          <b>Nosso escritório</b>
+          <small id="endereco">Rua Exemplo, 123 – Sala 4 – Centro, Sua Cidade/UF</small>
+          <span class="addr-actions" style="margin-top:8px">
+            <button class="mini" type="button" id="copiar">Copiar endereço</button>
+            <a class="mini" href="https://maps.google.com/" target="_blank" rel="noopener">Abrir no mapa</a>
+          </span>
+        </span>
+      </div>
+    </section>
+
+    <footer>
+      <nav>
+        <a href="https://example.com/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://example.com/termos" target="_blank" rel="noopener">Termos e Condições</a>
+      </nav>
+      <span>Feito com carinho pela equipe Sua Marca</span>
+    </footer>
+
+  </div>
 </main>
 
 <script>
 document.getElementById("copiar").addEventListener("click", function () {
-  var btn = this;
-  var text = document.getElementById("endereco").innerText.replace(/\n/g, " ");
+  var btn = this, el = document.getElementById("endereco");
   function done(msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = "Copiar endereço"; }, 2000); }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function () { done("Copiado"); }, selectIt);
-  } else { selectIt(); }
   function selectIt() {
-    var r = document.createRange(); r.selectNodeContents(document.getElementById("endereco"));
+    var r = document.createRange(); r.selectNodeContents(el);
     var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done("Selecionado, use Ctrl+C");
   }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(el.innerText).then(function () { done("Copiado"); }, selectIt);
+  } else { selectIt(); }
 });
 </script>
