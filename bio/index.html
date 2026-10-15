@@ -1,43 +1,45 @@
-<title>Link na Bio da Clínica</title>
+<title>Ana Desidério Bio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gayathri:wght@400;700&family=Mulish:wght@400;500;600&display=swap">
 <style>
-/* Layout: um cartão central de 480px sobre fundo neutro; perfil, redes, links em lista, conteúdo e endereço */
+/* Layout: um cartão central de 480px sobre fundo areia; perfil, redes, links em lista, conteúdo e endereço */
+/* Cores e fontes do Manual de Identidade Visual Ana Desidério. Absara Sans (texto) não está no Google Fonts: Mulish é a substituta. */
 :root {
-  --bg: #fafafa;
-  --card: #fcfcfc;
-  --card-line: #e8e8e8;
-  --row: #fcfcfc;
-  --row-line: #f2f2f2;
-  --icon-bg: #f0f0f0;
-  --icon-line: #ededed;
-  --ink: #1d1d1d;
-  --muted: #a0a2a7;
-  --soft: #787878;
-  --hot: #ff5588;
-  --go: #23db60;
-  --font: "Inter", "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
+  --bg: #f5ebe0;
+  --card: #fbf8f4;
+  --card-line: #e3d5ca;
+  --row: #ffffff;
+  --row-line: #ede4da;
+  --icon-bg: #ededE9;
+  --icon-line: #e3d5ca;
+  --ink: #3b3531;
+  --muted: #9a8b7c;
+  --soft: #ad9a84;
+  --hot: #ad9377;
+  --go: #ad9377;
+  --font-title: "Gayathri", "Helvetica Neue", Arial, sans-serif;
+  --font: "Mulish", "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #111112; --card: #18181a; --card-line: #2a2a2d; --row: #1d1d20; --row-line: #29292c;
-    --icon-bg: #262629; --icon-line: #313134; --ink: #f1f1f2; --muted: #8b8d93; --soft: #9a9a9e;
-    --hot: #ff6b98; --go: #3ee577; color-scheme: dark;
+    --bg: #1f1c1a; --card: #272320; --card-line: #3a332e; --row: #2d2825; --row-line: #3a332e;
+    --icon-bg: #35302c; --icon-line: #443c36; --ink: #f4ece3; --muted: #b3a493; --soft: #c4b09a;
+    --hot: #c2a88b; --go: #c2a88b; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #111112; --card: #18181a; --card-line: #2a2a2d; --row: #1d1d20; --row-line: #29292c;
-  --icon-bg: #262629; --icon-line: #313134; --ink: #f1f1f2; --muted: #8b8d93; --soft: #9a9a9e;
-  --hot: #ff6b98; --go: #3ee577; color-scheme: dark;
+  --bg: #1f1c1a; --card: #272320; --card-line: #3a332e; --row: #2d2825; --row-line: #3a332e;
+  --icon-bg: #35302c; --icon-line: #443c36; --ink: #f4ece3; --muted: #b3a493; --soft: #c4b09a;
+  --hot: #c2a88b; --go: #c2a88b; color-scheme: dark;
 }
 
 body {
   background: var(--bg);
   color: var(--ink);
   font: 400 1rem/1.35 var(--font);
-  letter-spacing: -.02em;
+  letter-spacing: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
@@ -58,13 +60,13 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-o
 /* Perfil */
 .profile { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
 .avatar {
-  width: 96px; height: 96px; border-radius: 60px; border: 1px solid #e6e6e6; overflow: hidden;
-  display: grid; place-items: center; background: var(--icon-bg);
-  font-weight: 600; font-size: 1.75rem; color: var(--soft);
+  width: 104px; height: 104px; border-radius: 60px; border: 1px solid var(--card-line); overflow: hidden;
+  display: grid; place-items: center; background: #ededE9;
 }
-.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.profile h1 { margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.1; }
-.profile p { margin: 4px 0 0; font-size: .8rem; color: var(--muted); max-width: 18rem; }
+.avatar img { width: 72%; height: 72%; object-fit: contain; display: block; }
+.profile h1 { margin: 0; font: 400 1.5rem/1 var(--font-title); letter-spacing: .14em; text-transform: uppercase; color: var(--soft); padding-top: .2em; }
+.profile .tagline { margin: 8px 0 0; font-size: .68rem; letter-spacing: .5em; text-transform: uppercase; color: var(--soft); padding-left: .5em; }
+.profile p { margin: 10px auto 0; font-size: .85rem; color: var(--muted); max-width: 18rem; }
 
 /* Redes com número de seguidores */
 .socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
@@ -100,6 +102,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-o
 .row small { display: block; font-size: .8rem; color: var(--muted); margin-top: 2px; }
 .row .chev { width: 16px; height: 16px; fill: none; stroke: var(--muted); stroke-width: 2; }
 .badge {
+  letter-spacing: .04em;
   display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 99px;
   background: var(--hot); color: #fff; font-size: .68rem; font-weight: 600; vertical-align: 1px;
 }
@@ -143,9 +146,10 @@ footer nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; 
   <div class="card">
 
     <header class="profile">
-      <div class="avatar" aria-hidden="true">SM</div>
+      <div class="avatar"><img src="simbolo.png" alt="Símbolo Ana Desidério"></div>
       <div>
-        <h1>Sua Marca</h1>
+        <h1>Ana Desidério</h1>
+        <p class="tagline">Reprograme-se</p>
         <p>Sua frase de apresentação em uma linha</p>
       </div>
       <nav class="socials" aria-label="Redes sociais">
@@ -189,7 +193,7 @@ footer nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; 
       </a>
       <a class="row" href="https://example.com/" target="_blank" rel="noopener">
         <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
-        <span><b>Site</b><small>Conheça a sua marca</small></span>
+        <span><b>Site</b><small>Conheça o trabalho da Ana</small></span>
         <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
       <a class="row" href="https://example.com/blog" target="_blank" rel="noopener">
@@ -225,7 +229,7 @@ footer nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; 
       </a>
       <a class="row" href="https://instagram.com/" target="_blank" rel="noopener">
         <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></span>
-        <span><b>Nosso Instagram</b><small>@suamarca</small></span>
+        <span><b>Nosso Instagram</b><small>@anadesiderio</small></span>
         <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
       </a>
 
@@ -248,7 +252,7 @@ footer nav { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; 
         <span aria-hidden="true">·</span>
         <a href="https://example.com/termos" target="_blank" rel="noopener">Termos e Condições</a>
       </nav>
-      <span>Feito com carinho pela equipe Sua Marca</span>
+      <span>Feito com carinho por Ana Desidério</span>
     </footer>
 
   </div>
